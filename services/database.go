@@ -5,17 +5,23 @@ import (
 	"errors"
 	"github.com/jackc/pgx/v5"
 	"github.com/joho/godotenv"
-	"os"
 	"log"
+	"os"
 )
 
 func DbConnect(ctx context.Context) (*pgx.Conn, error) {
-	// Debug current working directory
 	dir, _ := os.Getwd()
 	log.Printf("Current working directory: %s\n", dir)
 
 	// Load .env file
 	err := godotenv.Load("/app/.env")
+	// Load .env file from root directory if not found in /app
+	if err != nil {
+		err = godotenv.Load(".env")
+		if err != nil {
+			log.Fatalf("Error loading .env file from both /app/.env and .env: %v", err)
+		}
+	}
 	if err != nil {
 		log.Printf("Error loading .env file: %v\n", err)
 		return nil, errors.New("Error loading .env file")
@@ -39,7 +45,6 @@ func DbConnect(ctx context.Context) (*pgx.Conn, error) {
 	log.Println("Connected to the database successfully")
 	return conn, nil
 }
-
 
 func InitializeSchema(ctx context.Context, conn *pgx.Conn) error {
 	createTableQuery := `

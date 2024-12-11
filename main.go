@@ -11,16 +11,14 @@ import (
 func main() {
 	log.Println("Starting application...")
 
-
 	ctx := context.Background()
-	
+
 	log.Println("Connecting to the database...")
 	// Connect to the database
 	conn, err := services.DbConnect(ctx)
 	if err != nil {
 		log.Fatal(err)
 	}
-
 
 	defer conn.Close(ctx)
 	log.Println("Initializing schema...")
@@ -30,7 +28,6 @@ func main() {
 		log.Fatal(err)
 	}
 
-	
 	log.Println("Database connected and schema initialized")
 	log.Println("Starting server...")
 	r := gin.Default()

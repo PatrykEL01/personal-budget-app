@@ -13,4 +13,8 @@ func SetupRouter(r *gin.Engine) {
 	r.POST("/budgets/add", controllers.AddToBudget)
 	r.GET("/health", controllers.Health)
 
+	// db routes
+	r.GET("/db/budgets", controllers.ControllerGetAllBudgetsDB)
+	r.PUT("/db/budgets", controllers.ControllerPutBudgetDb)
+
 }
