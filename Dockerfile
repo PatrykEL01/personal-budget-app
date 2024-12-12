@@ -14,7 +14,9 @@ COPY . .
 # Build the application
 RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags="-s -w" -o personal-budget
 
-FROM gcr.io/distroless/base-debian10 AS runner
+FROM golang:1.23-alpine AS runner
+
+RUN addgroup -S nonroot && adduser -S nonroot -G nonroot
 
 COPY --from=builder /app/personal-budget /personal-budget
 

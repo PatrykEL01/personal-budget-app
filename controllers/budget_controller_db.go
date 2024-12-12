@@ -9,6 +9,18 @@ import (
 	"strconv"
 )
 
+func Ping(c *gin.Context) {
+	c.JSON(http.StatusOK, gin.H{
+		"message": "pong",
+	})
+}
+
+func Health(c *gin.Context) {
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Health OK",
+	})
+}
+
 // Helper func to convert ID to int
 func DbIdConversiontoInt(idParam string) (int, error) {
 	id, err := strconv.Atoi(idParam)
@@ -185,8 +197,8 @@ func ControllerSpendBudgetDb(c *gin.Context) {
 	id, err := DbIdConversiontoInt(idParam)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "Invalid ID format",
-			"idParam":   idParam,
+			"error":   "Invalid ID format",
+			"idParam": idParam,
 		})
 		return
 	}
