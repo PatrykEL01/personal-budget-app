@@ -10,6 +10,7 @@ import (
 
 const insertBudgetQuery = `INSERT INTO personal_budget (name, amount) VALUES ($1, $2)`
 const getBudgetQuery = `SELECT id, name, amount FROM personal_budget`
+const addToBudgetQuery = `UPDATE personal_budget SET amount = amount + $1 WHERE id = $2`
 
 func errCheck(err error) error {
 	if err != nil {
@@ -94,5 +95,27 @@ func PostBudgetDb(ctx context.Context, conn *pgx.Conn, budget models.Budget) err
 	}
 
 	log.Println("Budget inserted successfully!")
+	return nil
+}
+
+// add to budget
+
+func AddToBudgetDb(ctx context.Context, conn *pgx.Conn, id int, amount float64) error {
+	if id <= 0 {
+		return fmt.Errorf("invalid budget ID: %d", id)
+	}
+	if amount <= 0 {
+		return fmt.Errorf("invalid amount: %.2f", amount)
+	}
+
+	log.Printf("Adding %.2f to budget with ID: %d\n", amount, id)
+
+	_, err := conn.Exec(ctx, addToBudgetQuery, amount, id)
+	if err != nil {
+		log.Printf("Error updating budget: %v\n", err)
+		return fmt.Errorf("failed to add to budget: %w", err)
+	}
+
+	log.Println("Added to budget successfully!")
 	return nil
 }
