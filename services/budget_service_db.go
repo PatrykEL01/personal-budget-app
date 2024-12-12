@@ -12,6 +12,7 @@ const insertBudgetQuery = `INSERT INTO personal_budget (name, amount) VALUES ($1
 const getBudgetQuery = `SELECT id, name, amount FROM personal_budget`
 const getSingleBudgetQuery = `SELECT id, name, amount FROM personal_budget WHERE id = $1`
 const addToBudgetQuery = `UPDATE personal_budget SET amount = amount + $1 WHERE id = $2`
+const spendBudgetQuery = `UPDATE personal_budget SET amount = amount - $1 WHERE id = $2`
 
 func errCheck(err error) error {
 	if err != nil {
@@ -119,4 +120,27 @@ func AddToBudgetDb(ctx context.Context, conn *pgx.Conn, id int, amount float64) 
 
 	log.Println("Added to budget successfully!")
 	return nil
+}
+
+// spend from budget
+
+func SpendBudgetDb(ctx context.Context, conn *pgx.Conn, id int, amount float64) error {
+	if id <= 0 {
+		return fmt.Errorf("invalid budget ID: %d", id)
+	}
+	if amount <= 0 {
+		return fmt.Errorf("invalid amount: %.2f", amount)
+	}
+
+	log.Printf("Spending %.2f from budget with ID: %d\n", amount, id)
+
+	_, err := conn.Exec(ctx, spendBudgetQuery, amount, id)
+	if err != nil {
+		log.Printf("Error updating budget: %v\n", err)
+		return fmt.Errorf("failed to spend from budget: %w", err)
+	}
+
+	log.Println("Spent from budget successfully!")
+	return nil
+
 }

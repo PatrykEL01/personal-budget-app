@@ -176,3 +176,51 @@ func ControllerAddToBudgetDb(c *gin.Context) {
 		"amount":  amount,
 	})
 }
+
+func ControllerSpendBudgetDb(c *gin.Context) {
+
+	idParam := c.PostForm("id")
+	amountParam := c.PostForm("amount")
+
+	id, err := DbIdConversiontoInt(idParam)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "Invalid ID format",
+			"idParam":   idParam,
+		})
+		return
+	}
+
+	amount, err := DbAmountConversiontoFloat(amountParam)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "Invalid amount format",
+		})
+		return
+	}
+
+	ctx := context.Background()
+
+	conn, err := services.DbConnect(ctx)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": "Failed to connect to database",
+		})
+		return
+	}
+	defer conn.Close(ctx)
+
+	err = services.SpendBudgetDb(ctx, conn, id, amount)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Spent from budget successfully",
+		"amount":  amount,
+	})
+
+}
