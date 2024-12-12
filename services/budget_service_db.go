@@ -10,6 +10,7 @@ import (
 
 const insertBudgetQuery = `INSERT INTO personal_budget (name, amount) VALUES ($1, $2)`
 const getBudgetQuery = `SELECT id, name, amount FROM personal_budget`
+const getSingleBudgetQuery = `SELECT id, name, amount FROM personal_budget WHERE id = $1`
 const addToBudgetQuery = `UPDATE personal_budget SET amount = amount + $1 WHERE id = $2`
 
 func errCheck(err error) error {
@@ -66,7 +67,7 @@ func GetSingleBudgetDb(ctx context.Context, conn *pgx.Conn, id int) (models.Budg
 	log.Printf("Fetching budget with ID: %d\n", id)
 
 	var budget models.Budget
-	err := conn.QueryRow(ctx, getBudgetQuery, id).Scan(&budget.ID, &budget.Name, &budget.Amount)
+	err := conn.QueryRow(ctx, getSingleBudgetQuery, id).Scan(&budget.ID, &budget.Name, &budget.Amount)
 	if err != nil {
 		if err == pgx.ErrNoRows {
 			log.Printf("Budget with ID %d not found\n", id)

@@ -54,6 +54,40 @@ func ControllerGetAllBudgetsDB(c *gin.Context) {
 	c.JSON(http.StatusOK, budgets)
 }
 
+func ControllerGetSingleBudgetDb(c *gin.Context) {
+
+	ctx := context.Background()
+
+	conn, err := services.DbConnect(ctx)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": "Failed to connect to database",
+		})
+		return
+	}
+	defer conn.Close(ctx)
+
+	idParam := c.Param("id")
+	id, err := DbIdConversiontoInt(idParam)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "Invalid ID format",
+		})
+		return
+	}
+
+	budget, err := services.GetSingleBudgetDb(ctx, conn, id)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, budget)
+
+}
+
 // Controller to insert a budget into the database
 func ControllerPostBudgetDb(c *gin.Context) {
 	name := c.PostForm("name")
@@ -98,12 +132,9 @@ func ControllerPostBudgetDb(c *gin.Context) {
 	})
 }
 
-
-
-
 func ControllerAddToBudgetDb(c *gin.Context) {
-	idParam := c.PostForm("id")         
-	amountParam := c.PostForm("amount") 
+	idParam := c.PostForm("id")
+	amountParam := c.PostForm("amount")
 
 	id, err := DbIdConversiontoInt(idParam)
 	if err != nil {
