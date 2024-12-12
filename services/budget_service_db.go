@@ -8,8 +8,6 @@ import (
 	"personal-budget/models"
 )
 
-
-
 const insertBudgetQuery = `INSERT INTO personal_budget (name, amount) VALUES ($1, $2)`
 const getBudgetQuery = `SELECT id, name, amount FROM personal_budget`
 
@@ -83,7 +81,7 @@ func GetSingleBudgetDb(ctx context.Context, conn *pgx.Conn, id int) (models.Budg
 
 // put a budget
 
-func PutBudgetDb(ctx context.Context, conn *pgx.Conn, budget models.Budget) error {
+func PostBudgetDb(ctx context.Context, conn *pgx.Conn, budget models.Budget) error {
 	if err := validateBudget(budget); err != nil {
 		return fmt.Errorf("invalid budget data: %w", err)
 	}

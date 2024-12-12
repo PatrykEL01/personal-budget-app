@@ -27,18 +27,12 @@ func DbAmountConversiontoFloat(amountParam string) (float64, error) {
 	return amount, nil
 }
 
-
-
-
-
-
-
 // Controller to get all budgets from the database
 func ControllerGetAllBudgetsDB(c *gin.Context) {
 	// Create context
 	ctx := context.Background()
 
-	conn, err := services.DbConnect(ctx) 
+	conn, err := services.DbConnect(ctx)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": "Failed to connect to database",
@@ -60,15 +54,8 @@ func ControllerGetAllBudgetsDB(c *gin.Context) {
 	c.JSON(http.StatusOK, budgets)
 }
 
-
-
-
-
-
-
-
 // Controller to insert a budget into the database
-func ControllerPutBudgetDb(c *gin.Context) {
+func ControllerPostBudgetDb(c *gin.Context) {
 	name := c.PostForm("name")
 	amount := c.PostForm("amount")
 	id := c.PostForm("id")
@@ -109,7 +96,7 @@ func ControllerPutBudgetDb(c *gin.Context) {
 		Amount: amountFloat,
 	}
 
-	err = services.PutBudgetDb(ctx, conn, budget)
+	err = services.PostBudgetDb(ctx, conn, budget)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": err.Error(),

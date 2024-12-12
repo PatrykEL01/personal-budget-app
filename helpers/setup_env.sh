@@ -60,6 +60,14 @@ docker build -t "${DOCKER_REGISTRY}/${APP_NAME}:${NEW_TAG}" .
 
 # Run the Go application
 echo "Starting the Go application..."
+
+
+if docker ps -q --filter "name=^${APP_NAME}$" | grep -q .; then
+  echo "Stopping the existing Go application..."
+  docker stop $APP_NAME
+fi
+
+
 docker run --rm -d \
   --name $APP_NAME \
   --network $NETWORK_NAME \
