@@ -12,7 +12,7 @@ func LoadEnv() error {
 	dir, _ := os.Getwd()
 	log.Printf("Current working directory: %s\n", dir)
 
-	possiblePaths := []string{"/app/.env", ".env"}
+	possiblePaths := []string{"/app/.env", ".env", "../.env"}
 
 	var lastErr error
 	for _, path := range possiblePaths {
