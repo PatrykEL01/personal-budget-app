@@ -20,7 +20,7 @@ func TestMain(m *testing.M) {
 	}
 
 	ctx := context.Background()
-	conn, err := DbConnect(ctx)
+	conn, err := DbConnect(ctx, dbUrl)
 	if err != nil {
 		log.Fatalf("Failed to connect to database: %v", err)
 	}
