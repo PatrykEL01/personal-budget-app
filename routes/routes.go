@@ -2,10 +2,10 @@ package routes
 
 import (
 	"github.com/gin-gonic/gin"
-	"personal-budget/controllers"
-	"github.com/swaggo/gin-swagger"
 	"github.com/swaggo/files"
-    _ "personal-budget/docs"
+	"github.com/swaggo/gin-swagger"
+	"personal-budget/controllers"
+	_ "personal-budget/docs"
 )
 
 func SetupRouter(r *gin.Engine) {
