@@ -6,6 +6,7 @@ import (
 	"log"
 	"os"
 )
+
 // LoadEnv loads the environment variables from the .env file.
 func LoadEnv() error {
 	dir, _ := os.Getwd()

@@ -5,6 +5,7 @@ import (
 	"github.com/jackc/pgx/v5"
 	"log"
 )
+
 // DbConnect connects to the database using the provided URL.
 func DbConnect(ctx context.Context, dbURL string) (*pgx.Conn, error) {
 
@@ -19,6 +20,7 @@ func DbConnect(ctx context.Context, dbURL string) (*pgx.Conn, error) {
 	log.Println("Connected to the database successfully")
 	return conn, nil
 }
+
 // InitializeSchema creates the personal_budget table if it does not exist.
 func InitializeSchema(ctx context.Context, conn *pgx.Conn) error {
 	createTableQuery := `

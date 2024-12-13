@@ -37,6 +37,7 @@ func validateBudget(budget models.Budget) error {
 	return nil
 
 }
+
 // GetAllBudgetsDb retrieves all budgets from the database.
 // It executes a query to fetch all rows from the personal_budget table
 // and returns a slice of Budget models or an error if the operation fails.
@@ -82,7 +83,6 @@ func GetSingleBudgetDb(ctx context.Context, conn *pgx.Conn, id int) (models.Budg
 	return budget, nil
 }
 
-
 // PostBudgetDb inserts a new budget into the database.
 func PostBudgetDb(ctx context.Context, conn *pgx.Conn, budget models.Budget) error {
 	if err := validateBudget(budget); err != nil {
@@ -99,7 +99,6 @@ func PostBudgetDb(ctx context.Context, conn *pgx.Conn, budget models.Budget) err
 	log.Println("Budget inserted successfully!")
 	return nil
 }
-
 
 // AddToBudgetDb adds an amount to an existing budget.
 func AddToBudgetDb(ctx context.Context, conn *pgx.Conn, id int, amount float64) error {
@@ -121,7 +120,6 @@ func AddToBudgetDb(ctx context.Context, conn *pgx.Conn, id int, amount float64) 
 	log.Println("Added to budget successfully!")
 	return nil
 }
-
 
 // SpendBudgetDb subtracts an amount from an existing budget.
 func SpendBudgetDb(ctx context.Context, conn *pgx.Conn, id int, amount float64) error {

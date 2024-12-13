@@ -1,6 +1,5 @@
 package models
 
-
 // Budget struct
 type Budget struct {
 	ID     int     `json:"id"`
