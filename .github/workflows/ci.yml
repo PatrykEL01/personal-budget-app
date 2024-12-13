@@ -1,5 +1,10 @@
 name: CI Pipeline
 
+permissions:
+  contents: read
+  security-events: write
+
+
 # This CI pipeline automates the testing, linting, and Docker image creation process for the Go application.
 # It includes:
 # 1. Setting up a PostgreSQL database service for integration tests.
