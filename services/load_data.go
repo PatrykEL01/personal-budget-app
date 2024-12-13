@@ -3,7 +3,7 @@ package services
 import (
 	"context"
 	"log"
-	"github.com/jackc/pgx/v4"
+	"github.com/jackc/pgx/v5"
 )
 
 
