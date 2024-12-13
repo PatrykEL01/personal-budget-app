@@ -13,11 +13,7 @@ import (
 var dbUrl string
 
 func TestMain(m *testing.M) {
-	err := LoadEnv()
-	if err != nil {
-		log.Fatalf("Failed to load environment variables: %v", err)
-	}
-
+	
 	dbUrl = os.Getenv("DATABASE_URL")
 	if dbUrl == "" {
 		log.Fatal("DATABASE_URL is not set")
