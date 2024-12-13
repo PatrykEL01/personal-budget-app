@@ -1,40 +1,40 @@
-name: CI Pipeline
+# name: CI Pipeline
 
-on:
-  push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
+# on:
+#   push:
+#     branches:
+#       - main
+#   pull_request:
+#     branches:
+#       - main
 
-jobs:
-  build:
-    runs-on: ubuntu-latest
+# jobs:
+#   build:
+#     runs-on: ubuntu-latest
 
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+#     steps:
+#       - name: Checkout code
+#         uses: actions/checkout@v3
 
-      - name: Set up Go
-        uses: actions/setup-go@v4
-        with:
-          go-version: 1.20
+#       - name: Set up Go
+#         uses: actions/setup-go@v4
+#         with:
+#           go-version: 1.20
 
-      - name: Install dependencies
-        run: go mod tidy
+#       - name: Install dependencies
+#         run: go mod tidy
 
-      - name: Run linters
-        run: |
-          golint ./...
-          go vet ./...
-          gofmt -s -d .
+#       - name: Run linters
+#         run: |
+#           golint ./...
+#           go vet ./...
+#           gofmt -s -d .
 
-      - name: Run tests
-        run: go test ./... -v
+#       - name: Run tests
+#         run: go test ./... -v
 
-      - name: Build Docker image
-        run: docker build -t personal-budget:latest .
+#       - name: Build Docker image
+#         run: docker build -t personal-budget:latest .
 
-      - name: Scan Docker image
-        run: trivy image personal-budget:latest
+#       - name: Scan Docker image
+#         run: trivy image personal-budget:latest

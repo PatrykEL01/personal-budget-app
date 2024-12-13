@@ -1,0 +1,56 @@
+name: Go Test Pipeline
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: testuser
+          POSTGRES_PASSWORD: testpassword
+          POSTGRES_DB: testdb
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready -U testuser"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Wait for PostgreSQL to be ready
+        run: |
+          until pg_isready -h localhost -p 5432 -U testuser; do
+            echo "Waiting for PostgreSQL..."
+            sleep 1
+          done
+          echo "PostgreSQL is ready!"
+
+      - name: Initialize database schema
+        run: |
+          psql -h localhost -p 5432 -U testuser -d testdb <<EOF
+          CREATE TABLE IF NOT EXISTS personal_budget (
+              id SERIAL PRIMARY KEY,
+              name TEXT NOT NULL,
+              amount NUMERIC(10, 2) NOT NULL,
+              created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+          );
+          EOF
+
+      - name: Export DATABASE_URL
+        run: echo "DATABASE_URL=postgres://testuser:testpassword@localhost:5432/testdb" >> $GITHUB_ENV
+
+      - name: Run tests
+        run: go test ./... -v
