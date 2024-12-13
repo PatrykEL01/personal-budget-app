@@ -1,40 +1,86 @@
-# name: CI Pipeline
+name: CI Pipeline
 
-# on:
-#   push:
-#     branches:
-#       - main
-#   pull_request:
-#     branches:
-#       - main
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
 
-# jobs:
-#   build:
-#     runs-on: ubuntu-latest
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: testuser
+          POSTGRES_PASSWORD: testpassword
+          POSTGRES_DB: testdb
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready -U testuser"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
 
-#     steps:
-#       - name: Checkout code
-#         uses: actions/checkout@v3
+    steps:
+      # 1. Checkout code
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-#       - name: Set up Go
-#         uses: actions/setup-go@v4
-#         with:
-#           go-version: 1.20
+      # 2. Set up Go environment
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: 1.20
 
-#       - name: Install dependencies
-#         run: go mod tidy
+      # 3. Install dependencies
+      - name: Install dependencies
+        run: go mod tidy
 
-#       - name: Run linters
-#         run: |
-#           golint ./...
-#           go vet ./...
-#           gofmt -s -d .
+      # 4. Run linters
+      - name: Run linters
+        run: |
+          golint ./...
+          go vet ./...
+          gofmt -s -d .
 
-#       - name: Run tests
-#         run: go test ./... -v
+      # 5. Wait for PostgreSQL to be ready
+      - name: Wait for PostgreSQL to be ready
+        run: |
+          until pg_isready -h localhost -p 5432 -U testuser; do
+            echo "Waiting for PostgreSQL..."
+            sleep 1
+          done
+          echo "PostgreSQL is ready!"
 
-#       - name: Build Docker image
-#         run: docker build -t personal-budget:latest .
+      # 6. Initialize database schema
+      - name: Initialize database schema
+        run: |
+          PGPASSWORD=testpassword psql -h localhost -p 5432 -U testuser -d testdb <<EOF
+          CREATE TABLE IF NOT EXISTS personal_budget (
+              id SERIAL PRIMARY KEY,
+              name TEXT NOT NULL,
+              amount NUMERIC(10, 2) NOT NULL,
+              created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+          );
+          EOF
 
-#       - name: Scan Docker image
-#         run: trivy image personal-budget:latest
+      # 7. Export DATABASE_URL for testing
+      - name: Export DATABASE_URL
+        run: echo "DATABASE_URL=postgres://testuser:testpassword@localhost:5432/testdb" >> $GITHUB_ENV
+
+      # 8. Run tests
+      - name: Run tests
+        run: go test ./... -v
+
+      # 9. Build Docker image
+      - name: Build Docker image
+        run: docker build -t personal-budget:latest .
+
+      # 10. Scan Docker image
+      - name: Scan Docker image
+        run: trivy image personal-budget:latest
