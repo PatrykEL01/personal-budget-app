@@ -13,12 +13,26 @@ import (
 var dbUrl string
 
 func TestMain(m *testing.M) {
-	
+
 	dbUrl = os.Getenv("DATABASE_URL")
 	if dbUrl == "" {
 		log.Fatal("DATABASE_URL is not set")
 	}
 
+	ctx := context.Background()
+	conn, err := DbConnect(ctx)
+	if err != nil {
+		log.Fatalf("Failed to connect to database: %v", err)
+	}
+
+	// Seed the database with test data
+	err = SeedTestData(ctx, conn)
+	if err != nil {
+		log.Fatalf("Failed to seed test data: %v", err)
+	}
+	defer conn.Close(ctx)
+
+	// Run tests
 	code := m.Run()
 
 	os.Exit(code)
