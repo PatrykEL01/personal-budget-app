@@ -6,6 +6,7 @@ name: CI Pipeline
 # 2. Running Go linters and tests to ensure code quality.
 # 3. Building a Docker image of the application.
 # 4. Scanning the Docker image for vulnerabilities.
+# 5. Performing static code analysis using CodeQL.
 
 on:
   push:
@@ -75,10 +76,8 @@ jobs:
           );
           EOF
 
-        # Create .env file to successfully pass the Docker build action
       - name: Create .env file
         run: echo "DATABASE_URL=postgres://testuser:testpassword@localhost:5432/testdb" > .env
-
 
       - name: Export DATABASE_URL for testing
         run: echo "DATABASE_URL=postgres://testuser:testpassword@localhost:5432/testdb" >> $GITHUB_ENV
@@ -95,3 +94,11 @@ jobs:
             -v /var/run/docker.sock:/var/run/docker.sock \
             -v $HOME/.cache:/root/.cache \
             aquasec/trivy:latest image personal-budget:latest
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v2
+        with:
+          languages: go
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v2
