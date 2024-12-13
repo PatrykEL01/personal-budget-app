@@ -76,6 +76,11 @@ jobs:
           );
           EOF
 
+        # Create .env file to successfully pass the Docker build action
+      - name: Create .env file
+        run: echo "DATABASE_URL=postgres://testuser:testpassword@localhost:5432/testdb" > .env
+
+
       - name: Export DATABASE_URL for testing
         run: echo "DATABASE_URL=postgres://testuser:testpassword@localhost:5432/testdb" >> $GITHUB_ENV
 
