@@ -1,5 +1,11 @@
 name: CI Pipeline
 
+# This CI pipeline automates the testing, linting, and Docker image creation process for the Go application.
+# It includes:
+# 1. Setting up a PostgreSQL database service for integration tests.
+# 2. Running Go linters and tests to ensure code quality.
+# 3. Building a Docker image of the application.
+# 4. Scanning the Docker image for vulnerabilities.
 on:
   push:
     branches:
@@ -27,28 +33,25 @@ jobs:
           --health-retries=5
 
     steps:
-      # 1. Checkout code
       - name: Checkout code
         uses: actions/checkout@v3
 
-      # 2. Set up Go environment
       - name: Set up Go
         uses: actions/setup-go@v4
         with:
-          go-version: 1.20
+          go-version: 1.23
 
-      # 3. Install dependencies
       - name: Install dependencies
-        run: go mod tidy
+        run: |
+          cd $GITHUB_WORKSPACE
+          go mod tidy
 
-      # 4. Run linters
       - name: Run linters
         run: |
           golint ./...
           go vet ./...
           gofmt -s -d .
 
-      # 5. Wait for PostgreSQL to be ready
       - name: Wait for PostgreSQL to be ready
         run: |
           until pg_isready -h localhost -p 5432 -U testuser; do
@@ -57,7 +60,6 @@ jobs:
           done
           echo "PostgreSQL is ready!"
 
-      # 6. Initialize database schema
       - name: Initialize database schema
         run: |
           PGPASSWORD=testpassword psql -h localhost -p 5432 -U testuser -d testdb <<EOF
@@ -69,18 +71,14 @@ jobs:
           );
           EOF
 
-      # 7. Export DATABASE_URL for testing
-      - name: Export DATABASE_URL
+      - name: Export DATABASE_URL for testing
         run: echo "DATABASE_URL=postgres://testuser:testpassword@localhost:5432/testdb" >> $GITHUB_ENV
 
-      # 8. Run tests
       - name: Run tests
         run: go test ./... -v
 
-      # 9. Build Docker image
       - name: Build Docker image
         run: docker build -t personal-budget:latest .
 
-      # 10. Scan Docker image
       - name: Scan Docker image
         run: trivy image personal-budget:latest
