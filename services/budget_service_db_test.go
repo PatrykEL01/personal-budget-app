@@ -26,7 +26,7 @@ func TestMain(m *testing.M) {
 	}
 
 	// Seed the database with test data
-	err = SeedTestData(ctx, conn)
+	err = LoadData(ctx, conn)
 	if err != nil {
 		log.Fatalf("Failed to seed test data: %v", err)
 	}
