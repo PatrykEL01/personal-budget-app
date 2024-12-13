@@ -1,13 +1,12 @@
 package services
 
 import (
+	"errors"
+	"github.com/joho/godotenv"
 	"log"
 	"os"
-	"github.com/joho/godotenv"
-	"errors"
 )
-
-
+// LoadEnv loads the environment variables from the .env file.
 func LoadEnv() error {
 	dir, _ := os.Getwd()
 	log.Printf("Current working directory: %s\n", dir)

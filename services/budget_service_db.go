@@ -22,7 +22,6 @@ func errCheck(err error) error {
 }
 
 // validate input
-
 func validateBudget(budget models.Budget) error {
 	var err error
 
@@ -38,8 +37,9 @@ func validateBudget(budget models.Budget) error {
 	return nil
 
 }
-
-// return all budgets
+// GetAllBudgetsDb retrieves all budgets from the database.
+// It executes a query to fetch all rows from the personal_budget table
+// and returns a slice of Budget models or an error if the operation fails.
 func GetAllBudgetsDb(ctx context.Context, conn *pgx.Conn) ([]models.Budget, error) {
 
 	rows, err := conn.Query(ctx, getBudgetQuery)
@@ -63,7 +63,7 @@ func GetAllBudgetsDb(ctx context.Context, conn *pgx.Conn) ([]models.Budget, erro
 
 }
 
-// get a single budget
+// GetSingleBudgetDb retrieves a single budget from the database by ID.
 func GetSingleBudgetDb(ctx context.Context, conn *pgx.Conn, id int) (models.Budget, error) {
 	log.Printf("Fetching budget with ID: %d\n", id)
 
@@ -82,8 +82,8 @@ func GetSingleBudgetDb(ctx context.Context, conn *pgx.Conn, id int) (models.Budg
 	return budget, nil
 }
 
-// put a budget
 
+// PostBudgetDb inserts a new budget into the database.
 func PostBudgetDb(ctx context.Context, conn *pgx.Conn, budget models.Budget) error {
 	if err := validateBudget(budget); err != nil {
 		return fmt.Errorf("invalid budget data: %w", err)
@@ -100,8 +100,8 @@ func PostBudgetDb(ctx context.Context, conn *pgx.Conn, budget models.Budget) err
 	return nil
 }
 
-// add to budget
 
+// AddToBudgetDb adds an amount to an existing budget.
 func AddToBudgetDb(ctx context.Context, conn *pgx.Conn, id int, amount float64) error {
 	if id <= 0 {
 		return fmt.Errorf("invalid budget ID: %d", id)
@@ -122,8 +122,8 @@ func AddToBudgetDb(ctx context.Context, conn *pgx.Conn, id int, amount float64) 
 	return nil
 }
 
-// spend from budget
 
+// SpendBudgetDb subtracts an amount from an existing budget.
 func SpendBudgetDb(ctx context.Context, conn *pgx.Conn, id int, amount float64) error {
 	if id <= 0 {
 		return fmt.Errorf("invalid budget ID: %d", id)

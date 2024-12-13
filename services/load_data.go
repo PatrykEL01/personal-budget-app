@@ -2,11 +2,10 @@ package services
 
 import (
 	"context"
-	"log"
 	"github.com/jackc/pgx/v5"
+	"log"
 )
-
-
+// LoadData seeds the personal_budget table with test data.
 func LoadData(ctx context.Context, conn *pgx.Conn) error {
 	query := `
 		INSERT INTO personal_budget (name, amount) VALUES 
@@ -33,14 +32,12 @@ func LoadData(ctx context.Context, conn *pgx.Conn) error {
 	log.Println("Test data seeded successfully!")
 	return nil
 }
-
-
-
+// CleanTestData truncates the personal_budget table to remove all test data.
 func CleanTestData(ctx context.Context, conn *pgx.Conn) error {
-    _, err := conn.Exec(ctx, "TRUNCATE TABLE personal_budget RESTART IDENTITY")
-    if err != nil {
-        return err
-    }
-    log.Println("Test data cleaned successfully!")
-    return nil
+	_, err := conn.Exec(ctx, "TRUNCATE TABLE personal_budget RESTART IDENTITY")
+	if err != nil {
+		return err
+	}
+	log.Println("Test data cleaned successfully!")
+	return nil
 }

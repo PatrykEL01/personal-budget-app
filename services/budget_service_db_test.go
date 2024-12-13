@@ -10,17 +10,17 @@ import (
 	"personal-budget/models"
 )
 
-var dbUrl string
+var dbURL string
 
 func TestMain(m *testing.M) {
 
-	dbUrl = os.Getenv("DATABASE_URL")
-	if dbUrl == "" {
+	dbURL = os.Getenv("DATABASE_URL")
+	if dbURL == "" {
 		log.Fatal("DATABASE_URL is not set")
 	}
 
 	ctx := context.Background()
-	conn, err := DbConnect(ctx, dbUrl)
+	conn, err := DbConnect(ctx, dbURL)
 	if err != nil {
 		log.Fatalf("Failed to connect to database: %v", err)
 	}
@@ -40,7 +40,7 @@ func TestMain(m *testing.M) {
 
 func TestDbConnect(t *testing.T) {
 	ctx := context.Background()
-	conn, err := DbConnect(ctx, dbUrl)
+	conn, err := DbConnect(ctx, dbURL)
 	assert.NoError(t, err)
 	assert.NotNil(t, conn)
 	defer conn.Close(ctx)
@@ -48,7 +48,7 @@ func TestDbConnect(t *testing.T) {
 
 func TestGetAllBudgetsDb(t *testing.T) {
 	ctx := context.Background()
-	conn, err := DbConnect(ctx, dbUrl)
+	conn, err := DbConnect(ctx, dbURL)
 	assert.NoError(t, err)
 	defer conn.Close(ctx)
 
@@ -59,7 +59,7 @@ func TestGetAllBudgetsDb(t *testing.T) {
 
 func TestGetSingleBudgetDb(t *testing.T) {
 	ctx := context.Background()
-	conn, err := DbConnect(ctx, dbUrl)
+	conn, err := DbConnect(ctx, dbURL)
 	assert.NoError(t, err)
 	defer conn.Close(ctx)
 
@@ -70,7 +70,7 @@ func TestGetSingleBudgetDb(t *testing.T) {
 
 func TestPostBudgetDb(t *testing.T) {
 	ctx := context.Background()
-	conn, err := DbConnect(ctx, dbUrl)
+	conn, err := DbConnect(ctx, dbURL)
 	assert.NoError(t, err)
 	defer conn.Close(ctx)
 
@@ -85,7 +85,7 @@ func TestPostBudgetDb(t *testing.T) {
 
 func TestAddToBudgetDb(t *testing.T) {
 	ctx := context.Background()
-	conn, err := DbConnect(ctx, dbUrl)
+	conn, err := DbConnect(ctx, dbURL)
 	assert.NoError(t, err)
 	defer conn.Close(ctx)
 
@@ -95,7 +95,7 @@ func TestAddToBudgetDb(t *testing.T) {
 
 func TestSpendBudgetDb(t *testing.T) {
 	ctx := context.Background()
-	conn, err := DbConnect(ctx, dbUrl)
+	conn, err := DbConnect(ctx, dbURL)
 	assert.NoError(t, err)
 	defer conn.Close(ctx)
 

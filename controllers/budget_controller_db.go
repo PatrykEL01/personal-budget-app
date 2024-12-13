@@ -4,13 +4,13 @@ import (
 	"context"
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"os"
 	"personal-budget/models"
 	"personal-budget/services"
 	"strconv"
-	"os"
 )
 
-var dbUrl = os.Getenv("DATABASE_URL")
+var dbURL = os.Getenv("DATABASE_URL")
 
 // Ping godoc
 // @Summary Ping the server
@@ -38,8 +38,9 @@ func Health(c *gin.Context) {
 	})
 }
 
-// Helper func to convert ID to int
-func DbIdConversiontoInt(idParam string) (int, error) {
+// DbIDConversionToInt converts an ID string to an integer.
+// It returns an error if the string cannot be converted.
+func DbIDConversionToInt(idParam string) (int, error) {
 	id, err := strconv.Atoi(idParam)
 	if err != nil {
 		return 0, err
@@ -47,8 +48,8 @@ func DbIdConversiontoInt(idParam string) (int, error) {
 	return id, nil
 }
 
-// Helper func to convert Amount to float
-func DbAmountConversiontoFloat(amountParam string) (float64, error) {
+// DbAmountConversionToFloat converts an amount from a string to a float.
+func DbAmountConversionToFloat(amountParam string) (float64, error) {
 	amount, err := strconv.ParseFloat(amountParam, 64)
 	if err != nil {
 		return 0, err
@@ -64,10 +65,9 @@ func DbAmountConversiontoFloat(amountParam string) (float64, error) {
 // @Success 200 {array} models.Budget
 // @Router /budgets [get]
 func ControllerGetAllBudgetsDB(c *gin.Context) {
-	// Create context
 	ctx := context.Background()
 
-	conn, err := services.DbConnect(ctx, dbUrl)
+	conn, err := services.DbConnect(ctx, dbURL)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": "Failed to connect to database",
@@ -76,7 +76,6 @@ func ControllerGetAllBudgetsDB(c *gin.Context) {
 	}
 	defer conn.Close(ctx)
 
-	// Fetch budgets
 	budgets, err := services.GetAllBudgetsDb(ctx, conn)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
@@ -85,7 +84,6 @@ func ControllerGetAllBudgetsDB(c *gin.Context) {
 		return
 	}
 
-	// Return budgets
 	c.JSON(http.StatusOK, budgets)
 }
 
@@ -98,10 +96,9 @@ func ControllerGetAllBudgetsDB(c *gin.Context) {
 // @Success 200 {object} models.Budget
 // @Router /budgets/{id} [get]
 func ControllerGetSingleBudgetDb(c *gin.Context) {
-
 	ctx := context.Background()
 
-	conn, err := services.DbConnect(ctx, dbUrl)
+	conn, err := services.DbConnect(ctx, dbURL)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": "Failed to connect to database",
@@ -111,7 +108,7 @@ func ControllerGetSingleBudgetDb(c *gin.Context) {
 	defer conn.Close(ctx)
 
 	idParam := c.Param("id")
-	id, err := DbIdConversiontoInt(idParam)
+	id, err := DbIDConversionToInt(idParam)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": "Invalid ID format",
@@ -144,8 +141,7 @@ func ControllerPostBudgetDb(c *gin.Context) {
 	name := c.PostForm("name")
 	amount := c.PostForm("amount")
 
-	// Amount conversion to float
-	amountFloat, err := DbAmountConversiontoFloat(amount)
+	amountFloat, err := DbAmountConversionToFloat(amount)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": "Invalid amount format",
@@ -153,10 +149,9 @@ func ControllerPostBudgetDb(c *gin.Context) {
 		return
 	}
 
-	// Create context
 	ctx := context.Background()
 
-	conn, err := services.DbConnect(ctx, dbUrl)
+	conn, err := services.DbConnect(ctx, dbURL)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": "Failed to connect to database",
@@ -197,7 +192,7 @@ func ControllerAddToBudgetDb(c *gin.Context) {
 	idParam := c.PostForm("id")
 	amountParam := c.PostForm("amount")
 
-	id, err := DbIdConversiontoInt(idParam)
+	id, err := DbIDConversionToInt(idParam)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": "Invalid ID format",
@@ -205,7 +200,7 @@ func ControllerAddToBudgetDb(c *gin.Context) {
 		return
 	}
 
-	amount, err := DbAmountConversiontoFloat(amountParam)
+	amount, err := DbAmountConversionToFloat(amountParam)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": "Invalid amount format",
@@ -215,7 +210,7 @@ func ControllerAddToBudgetDb(c *gin.Context) {
 
 	ctx := context.Background()
 
-	conn, err := services.DbConnect(ctx, dbUrl)
+	conn, err := services.DbConnect(ctx, dbURL)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": "Failed to connect to database",
@@ -249,11 +244,10 @@ func ControllerAddToBudgetDb(c *gin.Context) {
 // @Success 200 {object} map[string]interface{}
 // @Router /budgets/spend [post]
 func ControllerSpendBudgetDb(c *gin.Context) {
-
 	idParam := c.PostForm("id")
 	amountParam := c.PostForm("amount")
 
-	id, err := DbIdConversiontoInt(idParam)
+	id, err := DbIDConversionToInt(idParam)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error":   "Invalid ID format",
@@ -262,7 +256,7 @@ func ControllerSpendBudgetDb(c *gin.Context) {
 		return
 	}
 
-	amount, err := DbAmountConversiontoFloat(amountParam)
+	amount, err := DbAmountConversionToFloat(amountParam)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": "Invalid amount format",
@@ -272,7 +266,7 @@ func ControllerSpendBudgetDb(c *gin.Context) {
 
 	ctx := context.Background()
 
-	conn, err := services.DbConnect(ctx, dbUrl)
+	conn, err := services.DbConnect(ctx, dbURL)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": "Failed to connect to database",

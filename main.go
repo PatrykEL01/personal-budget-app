@@ -4,28 +4,26 @@ import (
 	"context"
 	"github.com/gin-gonic/gin"
 	"log"
-	"personal-budget/routes"
 	"os"
+	"personal-budget/routes"
 	"personal-budget/services"
 )
 
 func main() {
 	log.Println("Starting application...")
 
-	
 	err := services.LoadEnv()
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	dbUrl := os.Getenv("DATABASE_URL")
+	dbURL := os.Getenv("DATABASE_URL")
 
-	
 	ctx := context.Background()
 
 	log.Println("Connecting to the database...")
 	// Connect to the database
-	conn, err := services.DbConnect(ctx, dbUrl)
+	conn, err := services.DbConnect(ctx, dbURL)
 	if err != nil {
 		log.Fatal(err)
 	}
