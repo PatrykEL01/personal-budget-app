@@ -1,29 +1,36 @@
-/*
-Package services contains unit tests for the budget service functions that interact with the database.
-
-Tests included:
-- TestDbConnect: Tests the database connection function.
-- TestGetAllBudgetsDb: Tests the function to retrieve all budgets from the database.
-- TestGetSingleBudgetDb: Tests the function to retrieve a single budget by ID from the database.
-- TestPostBudgetDb: Tests the function to insert a new budget into the database.
-- TestAddToBudgetDb: Tests the function to add an amount to an existing budget.
-- TestSpendBudgetDb: Tests the function to spend an amount from an existing budget.
-
-*/
-
 package services
 
 import (
 	"context"
+	"log"
+	"os"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 	"personal-budget/models"
 )
 
+var dbUrl string
+
+func TestMain(m *testing.M) {
+	err := LoadEnv()
+	if err != nil {
+		log.Fatalf("Failed to load environment variables: %v", err)
+	}
+
+	dbUrl = os.Getenv("DATABASE_URL")
+	if dbUrl == "" {
+		log.Fatal("DATABASE_URL is not set")
+	}
+
+	code := m.Run()
+
+	os.Exit(code)
+}
+
 func TestDbConnect(t *testing.T) {
 	ctx := context.Background()
-	conn, err := DbConnect(ctx)
+	conn, err := DbConnect(ctx, dbUrl)
 	assert.NoError(t, err)
 	assert.NotNil(t, conn)
 	defer conn.Close(ctx)
@@ -31,7 +38,7 @@ func TestDbConnect(t *testing.T) {
 
 func TestGetAllBudgetsDb(t *testing.T) {
 	ctx := context.Background()
-	conn, err := DbConnect(ctx)
+	conn, err := DbConnect(ctx, dbUrl)
 	assert.NoError(t, err)
 	defer conn.Close(ctx)
 
@@ -42,7 +49,7 @@ func TestGetAllBudgetsDb(t *testing.T) {
 
 func TestGetSingleBudgetDb(t *testing.T) {
 	ctx := context.Background()
-	conn, err := DbConnect(ctx)
+	conn, err := DbConnect(ctx, dbUrl)
 	assert.NoError(t, err)
 	defer conn.Close(ctx)
 
@@ -53,7 +60,7 @@ func TestGetSingleBudgetDb(t *testing.T) {
 
 func TestPostBudgetDb(t *testing.T) {
 	ctx := context.Background()
-	conn, err := DbConnect(ctx)
+	conn, err := DbConnect(ctx, dbUrl)
 	assert.NoError(t, err)
 	defer conn.Close(ctx)
 
@@ -68,7 +75,7 @@ func TestPostBudgetDb(t *testing.T) {
 
 func TestAddToBudgetDb(t *testing.T) {
 	ctx := context.Background()
-	conn, err := DbConnect(ctx)
+	conn, err := DbConnect(ctx, dbUrl)
 	assert.NoError(t, err)
 	defer conn.Close(ctx)
 
@@ -78,7 +85,7 @@ func TestAddToBudgetDb(t *testing.T) {
 
 func TestSpendBudgetDb(t *testing.T) {
 	ctx := context.Background()
-	conn, err := DbConnect(ctx)
+	conn, err := DbConnect(ctx, dbUrl)
 	assert.NoError(t, err)
 	defer conn.Close(ctx)
 

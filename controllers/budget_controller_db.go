@@ -7,7 +7,10 @@ import (
 	"personal-budget/models"
 	"personal-budget/services"
 	"strconv"
+	"os"
 )
+
+var dbUrl = os.Getenv("DATABASE_URL")
 
 // Ping godoc
 // @Summary Ping the server
@@ -64,7 +67,7 @@ func ControllerGetAllBudgetsDB(c *gin.Context) {
 	// Create context
 	ctx := context.Background()
 
-	conn, err := services.DbConnect(ctx)
+	conn, err := services.DbConnect(ctx, dbUrl)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": "Failed to connect to database",
@@ -98,7 +101,7 @@ func ControllerGetSingleBudgetDb(c *gin.Context) {
 
 	ctx := context.Background()
 
-	conn, err := services.DbConnect(ctx)
+	conn, err := services.DbConnect(ctx, dbUrl)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": "Failed to connect to database",
@@ -153,7 +156,7 @@ func ControllerPostBudgetDb(c *gin.Context) {
 	// Create context
 	ctx := context.Background()
 
-	conn, err := services.DbConnect(ctx)
+	conn, err := services.DbConnect(ctx, dbUrl)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": "Failed to connect to database",
@@ -212,7 +215,7 @@ func ControllerAddToBudgetDb(c *gin.Context) {
 
 	ctx := context.Background()
 
-	conn, err := services.DbConnect(ctx)
+	conn, err := services.DbConnect(ctx, dbUrl)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": "Failed to connect to database",
@@ -269,7 +272,7 @@ func ControllerSpendBudgetDb(c *gin.Context) {
 
 	ctx := context.Background()
 
-	conn, err := services.DbConnect(ctx)
+	conn, err := services.DbConnect(ctx, dbUrl)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": "Failed to connect to database",
