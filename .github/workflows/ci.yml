@@ -45,7 +45,6 @@ jobs:
       - name: Install linter and tools
         run: |
           go install golang.org/x/lint/golint@latest
-          curl -sSfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh
           echo "PATH=$PATH:$(go env GOPATH)/bin" >> $GITHUB_ENV
 
       - name: Install dependencies
@@ -90,5 +89,9 @@ jobs:
       - name: Build Docker image
         run: docker build -t personal-budget:latest .
 
-      - name: Scan Docker image
-        run: trivy image personal-budget:latest
+      - name: Scan Docker image with Trivy
+        run: |
+          docker run --rm \
+            -v /var/run/docker.sock:/var/run/docker.sock \
+            -v $HOME/.cache:/root/.cache \
+            aquasec/trivy:latest image personal-budget:latest
