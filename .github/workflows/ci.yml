@@ -6,6 +6,7 @@ name: CI Pipeline
 # 2. Running Go linters and tests to ensure code quality.
 # 3. Building a Docker image of the application.
 # 4. Scanning the Docker image for vulnerabilities.
+
 on:
   push:
     branches:
@@ -41,10 +42,14 @@ jobs:
         with:
           go-version: 1.23
 
-      - name: Install dependencies
+      - name: Install linter and tools
         run: |
-          cd $GITHUB_WORKSPACE
-          go mod tidy
+          go install golang.org/x/lint/golint@latest
+          curl -sSfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh
+          echo "PATH=$PATH:$(go env GOPATH)/bin" >> $GITHUB_ENV
+
+      - name: Install dependencies
+        run: go mod tidy
 
       - name: Run linters
         run: |
