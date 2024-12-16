@@ -19,7 +19,7 @@ spec:
           env: 
           # temporary solution
             - name: DATABASE_URL
-              value: postgres://personal_budget_user:personal_budget_password@personal-budget-db-cluster-rw.default.svc.cluster.local:5432/personal_budget_user
+              value: postgres://personal_budget_user:personal_budget_password@personal-budget-db-cluster-rw.cnpg-system.svc.cluster.local:5432/personal_budget_user
           ports:
             - containerPort: 8080
           resources:
