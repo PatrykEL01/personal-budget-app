@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: personal-budget-app
+  namespace: personal-budget-app
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: personal-budget-app
+  template:
+    metadata:
+      labels:
+        app: personal-budget-app
+    spec:
+      containers:
+        - name: personal-budget-app
+          image: patrykel1/personal-budget
+          env: 
+          # temporary solution
+            - name: DATABASE_URL
+              value: postgres://personal_budget_user:personal_budget_password@personal-budget-db-cluster-rw.default.svc.cluster.local:5432/personal_budget_user
+          ports:
+            - containerPort: 8080
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "500m"
+

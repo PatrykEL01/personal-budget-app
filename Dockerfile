@@ -18,6 +18,8 @@ FROM golang:1.23-alpine AS runner
 
 RUN addgroup -S nonroot && adduser -S nonroot -G nonroot
 
+COPY --from=builder /app /app
+
 COPY --from=builder /app/personal-budget /personal-budget
 
 COPY --from=builder /app/.env /app/.env
