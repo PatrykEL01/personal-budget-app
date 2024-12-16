@@ -24,6 +24,9 @@ COPY --from=builder /app/personal-budget /personal-budget
 
 COPY --from=builder /app/.env /app/.env
 
+RUN chown -R nonroot:nonroot /app /app/personal-budget /personal-budget
+
+
 USER nonroot:nonroot
 
 ENTRYPOINT ["/personal-budget"]

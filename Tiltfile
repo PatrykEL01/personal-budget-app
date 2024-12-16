@@ -32,22 +32,23 @@ k8s_yaml(['k8s/app/deployment.yaml', 'k8s/app/service.yaml'])
 allow_k8s_contexts('kind-local-k8s')
 
 
+## port forward the app to localhost:8080
 k8s_resource(
     'personal-budget-app',
     port_forwards=8080
 )
 
-
+## Naming the resources
 k8s_resource(
     new_name='DB_SECRET',
     objects=['personal-budget-user-secret']
 )
-
+## Naming the resources
 k8s_resource(
     new_name='postgresql',
     objects=['personal-budget-db-cluster']
 )
-
+## Naming the resources
 k8s_resource(
     new_name='namespace',
     objects=["personal-budget-app:namespace"]
